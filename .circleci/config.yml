@@ -38,7 +38,7 @@ jobs:
           name: "Tag Udagram Reverse Proxy"
           command: docker tag reverseproxy fuzzworth/reverseproxy:v7a
       - run:
-          name: "Build Udagram Reverse Proxy"
+          name: "Tag Udagram Reverse Proxy"
           command: docker build -t reverseproxy ./udagram-reverseproxy/
       - run:
           name: "Push Udagram Feed"
