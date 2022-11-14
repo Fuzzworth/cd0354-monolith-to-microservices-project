@@ -1,53 +1,124 @@
 version: 2.1
 
-jobs:
-  build:
+executors:
+  docker-publisher:
+    # Define the image tags
+    environment:
+      FEED_IMAGE_TAG: $DOCKERHUB_USERNAME/udagram-api-feed:v7a
+      USER_IMAGE_TAG: $DOCKERHUB_USERNAME/udagram-api-user:v7a
+      FRONTEND_IMAGE_TAG: $DOCKERHUB_USERNAME/udagram-frontend:v7a
+      REVERSE_IMAGE_TAG: $DOCKERHUB_USERNAME/reverseproxy:v7a
+
+    # Use `cimg/node:12.22` as the Docker image for this executor
     docker:
       - image: cimg/node:12.22
         auth:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_PASSWORD
+
+jobs:
+  build-feed:
+    executor: docker-publisher
     steps:
       - checkout
       - setup_remote_docker
       - run: node --version
       - run: docker --version
-       # invoke environment variable without curly braces.
       - run:
           name: "Build Udagram Feed"
-          command: docker build -t udagram-api-feed ./udagram-api-feed
+          command: docker build -t "${FEED_IMAGE_TAG}" ./udagram-api-feed
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./feed.tar
+
+  build-user:
+    executor: docker-publisher
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: node --version
       - run:
           name: "Build Udagram User"
-          command: docker build -t udagram-api-user ./udagram-api-user
+          command: docker build -t "${USER_IMAGE_TAG}" ./udagram-api-user
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./user.tar
+      
+  build-frontend:
+    executor: docker-publisher
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: node --version    
       - run:
           name: "Build Udagram Frontend"
-          command: docker build -t udagram-frontend ./udagram-frontend/
+          command: docker build -t "${FRONTEND_IMAGE_TAG}" ./udagram-frontend
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./frontend.tar
+
+  build-reverseproxy:
+    executor: docker-publisher
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: node --version  
       - run:
           name: "Build Udagram Reverse Proxy"
-          command: docker build -t reverseproxy ./udagram-reverseproxy/
+          command: docker build -t "${REVERSE_IMAGE_TAG}" ./udagram-reverseproxy
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./reverse.tar
+
+  push:
+    executor: docker-publisher
+    steps:
+      - setup_remote_docker
+      - run: node --version
+      - attach_workspace:
+          at: /tmp/workspace
       - run:
-          name: "Tag Udagram Feed"
-          command: docker tag udagram-api-feed fuzzworth/udagram-api-feed:v7a
+          name: Load Feed image
+          command: docker load --input /tmp/workspace/feed.tar
       - run:
-          name: "Tag Udagram User"
-          command: docker tag udagram-api-user fuzzworth/udagram-api-user:v7a
+          name: Load User image
+          command: docker load --input /tmp/workspace/user.tar
       - run:
-          name: "Tag Udagram Frontend"
-          command: docker tag udagram-frontend fuzzworth/udagram-frontend:v7a
+          name: Load Frontend image
+          command: docker load --input /tmp/workspace/frontend.tar
       - run:
-          name: "Tag Udagram Reverse Proxy"
-          command: docker tag reverseproxy fuzzworth/reverseproxy:v7a
+          name: Load Reverrse image
+          command: docker load --input /tmp/workspace/reverse.tar
+      # Log in to Docker Hub and push the image
       - run:
-          name: "Push Udagram Feed"
-          command: docker push fuzzworth/udagram-api-feed:v7a
-      - run:
-          name: "Push Udagram User"
-          command: docker push fuzzworth/udagram-api-user:v7a
-      - run:
-          name: "Push Udagram Frontend"
-          command: docker push fuzzworth/udagram-frontend:v7a
-      - run:
-          name: "Push Udagram Reverse Proxy"
-          command: docker push fuzzworth/reverseproxy:v7a
+          name: Publish Docker image
+          command: |
+            echo "${DOCKERHUB_PASSWORD}" | docker login --username "${DOCKERHUB_USERNAME}" --password-stdin
+            docker push "${FEED_IMAGE_TAG}"
+            docker push "${USER_IMAGE_TAG}"
+            docker push "${FRONTEND_IMAGE_TAG}"
+            docker push "${REVERSE_IMAGE_TAG}"
+
+workflows:
+  version: 2
+  build-push:
+    jobs:
+      - build-feed
+      - build-user
+      - build-frontend
+      - build-reverse
+      - push:
+          requires:
+            - build-feed
+            - build-user
+            - build-frontend
+            - build-reverse
+          filters:
+            branches:
+              only: main
 
 # VS Code Extension Version: 1.0.2
