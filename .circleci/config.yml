@@ -155,7 +155,7 @@ workflows:
       - push-user:
           requires:
             - build-user
-      - push-front:
+      - push-frontend:
           requires:
             - build-frontend
       - push-reverse:
