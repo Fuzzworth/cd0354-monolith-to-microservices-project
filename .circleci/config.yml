@@ -4,10 +4,10 @@ executors:
   docker-publisher:
     # Define the image tags
     environment:
-      FEED_IMAGE_TAG: $DOCKERHUB_USERNAME/udagram-api-feed:v7a
-      USER_IMAGE_TAG: $DOCKERHUB_USERNAME/udagram-api-user:v7a
-      FRONTEND_IMAGE_TAG: $DOCKERHUB_USERNAME/udagram-frontend:v7a
-      REVERSE_IMAGE_TAG: $DOCKERHUB_USERNAME/reverseproxy:v7a
+      FEED_IMAGE_TAG: fuzzworth/udagram-api-feed:v7a
+      USER_IMAGE_TAG: fuzzworth/udagram-api-user:v7a
+      FRONTEND_IMAGE_TAG: fuzzworth/udagram-frontend:v7a
+      REVERSE_IMAGE_TAG: fuzzworth/reverseproxy:v7a
 
     # Use `cimg/node:12.22` as the Docker image for this executor
     docker:
