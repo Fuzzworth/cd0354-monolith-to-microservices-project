@@ -110,13 +110,13 @@ workflows:
       - build-feed
       - build-user
       - build-frontend
-      - build-reverse
+      - build-reverseproxy
       - push:
           requires:
             - build-feed
             - build-user
             - build-frontend
-            - build-reverse
+            - build-reverseproxy
           filters:
             branches:
               only: main
