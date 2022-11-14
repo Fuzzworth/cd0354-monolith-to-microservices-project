@@ -56,7 +56,7 @@ jobs:
           name: "Build Udagram Frontend"
           command: docker build -t "${FRONTEND_IMAGE_TAG}" ./udagram-frontend
       - persist_to_workspace:
-          root: ./=
+          root: ./
           paths:
             - ./frontend.tar
 
