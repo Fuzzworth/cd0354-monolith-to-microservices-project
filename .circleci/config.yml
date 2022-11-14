@@ -28,7 +28,7 @@ jobs:
           name: "Build Udagram Feed"
           command: docker build -t "${FEED_IMAGE_TAG}" ./udagram-api-feed
       - persist_to_workspace:
-          root: .
+          root: /tmp/workspace
           paths:
             - ./feed.tar
 
@@ -42,7 +42,7 @@ jobs:
           name: "Build Udagram User"
           command: docker build -t "${USER_IMAGE_TAG}" ./udagram-api-user
       - persist_to_workspace:
-          root: .
+          root: /tmp/workspace
           paths:
             - ./user.tar
       
@@ -56,7 +56,7 @@ jobs:
           name: "Build Udagram Frontend"
           command: docker build -t "${FRONTEND_IMAGE_TAG}" ./udagram-frontend
       - persist_to_workspace:
-          root: .
+          root: /tmp/workspace
           paths:
             - ./frontend.tar
 
@@ -70,7 +70,7 @@ jobs:
           name: "Build Udagram Reverse Proxy"
           command: docker build -t "${REVERSE_IMAGE_TAG}" ./udagram-reverseproxy
       - persist_to_workspace:
-          root: .
+          root: /tmp/workspace
           paths:
             - ./reverse.tar
 
