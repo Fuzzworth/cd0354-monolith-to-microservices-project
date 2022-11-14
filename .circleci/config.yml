@@ -22,11 +22,13 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - run: node --version
       - run: docker --version
       - run:
           name: "Build Udagram Feed"
           command: docker build -t "${FEED_IMAGE_TAG}" ./udagram-api-feed
+      - run:
+          name: Archive Docker image
+          command: docker save --output image.tar "${FEED_IMAGE_TAG}"
       - persist_to_workspace:
           root: .
           paths:
@@ -37,10 +39,12 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - run: node --version
       - run:
           name: "Build Udagram User"
           command: docker build -t "${USER_IMAGE_TAG}" ./udagram-api-user
+      - run:
+          name: Archive Docker image
+          command: docker save --output image.tar "${USER_IMAGE_TAG}"
       - persist_to_workspace:
           root: .
           paths:
@@ -51,10 +55,12 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - run: node --version    
       - run:
           name: "Build Udagram Frontend"
           command: docker build -t "${FRONTEND_IMAGE_TAG}" ./udagram-frontend
+      - run:
+          name: Archive Docker image
+          command: docker save --output image.tar "${FRONTEND_IMAGE_TAG}"
       - persist_to_workspace:
           root: .
           paths:
@@ -65,10 +71,12 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - run: node --version  
       - run:
           name: "Build Udagram Reverse Proxy"
           command: docker build -t "${REVERSE_IMAGE_TAG}" ./udagram-reverseproxy
+      - run:
+          name: Archive Docker image
+          command: docker save --output image.tar "${REVERSE_IMAGE_TAG}"
       - persist_to_workspace:
           root: .
           paths:
@@ -83,7 +91,7 @@ jobs:
           at: /tmp/workspace
       - run:
           name: Load Feed image
-          command: docker load --input ./feed.tar
+          command: docker load --input /tmp/workspace/feed.tar
       # Log in to Docker Hub and push the image
       - run:
           name: Publish Docker image
@@ -100,7 +108,7 @@ jobs:
           at: /tmp/workspace
       - run:
           name: Load User image
-          command: docker load --input ./user.tar
+          command: docker load --input /tmp/workspace/user.tar
       # Log in to Docker Hub and push the image
       - run:
           name: Publish Docker image
@@ -117,7 +125,7 @@ jobs:
           at: /tmp/workspace
       - run:
           name: Load Frontend image
-          command: docker load --input ./frontend.tar
+          command: docker load --input /tmp/workspace/frontend.tar
       # Log in to Docker Hub and push the image
       - run:
           name: Publish Docker image
@@ -133,7 +141,7 @@ jobs:
           at: /tmp/workspace
       - run:
           name: Load Reverrse image
-          command: docker load --input ./reverse.tar
+          command: docker load --input /tmp/workspace/reverse.tar
       # Log in to Docker Hub and push the image
       - run:
           name: Publish Docker image
