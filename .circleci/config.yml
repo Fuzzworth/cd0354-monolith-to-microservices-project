@@ -28,7 +28,7 @@ jobs:
           name: "Build Udagram Feed"
           command: docker build -t "${FEED_IMAGE_TAG}" ./udagram-api-feed
       - persist_to_workspace:
-          root: /tmp
+          root: ./
           paths:
             - ./feed.tar
 
@@ -42,7 +42,7 @@ jobs:
           name: "Build Udagram User"
           command: docker build -t "${USER_IMAGE_TAG}" ./udagram-api-user
       - persist_to_workspace:
-          root: /tmp
+          root: ./
           paths:
             - ./user.tar
       
@@ -56,7 +56,7 @@ jobs:
           name: "Build Udagram Frontend"
           command: docker build -t "${FRONTEND_IMAGE_TAG}" ./udagram-frontend
       - persist_to_workspace:
-          root: /tmp
+          root: ./=
           paths:
             - ./frontend.tar
 
@@ -70,7 +70,7 @@ jobs:
           name: "Build Udagram Reverse Proxy"
           command: docker build -t "${REVERSE_IMAGE_TAG}" ./udagram-reverseproxy
       - persist_to_workspace:
-          root: /tmp
+          root: ./
           paths:
             - ./reverse.tar
 
@@ -83,16 +83,16 @@ jobs:
           at: /tmp/workspace
       - run:
           name: Load Feed image
-          command: docker load --input /tmp/feed.tar
+          command: docker load --input ./feed.tar
       - run:
           name: Load User image
-          command: docker load --input /tmp/user.tar
+          command: docker load --input ./user.tar
       - run:
           name: Load Frontend image
-          command: docker load --input /tmp/frontend.tar
+          command: docker load --input ./frontend.tar
       - run:
           name: Load Reverrse image
-          command: docker load --input /tmp/reverse.tar
+          command: docker load --input ./reverse.tar
       # Log in to Docker Hub and push the image
       - run:
           name: Publish Docker image
