@@ -28,7 +28,7 @@ jobs:
           command: docker build -t "${FEED_IMAGE_TAG}" ./udagram-api-feed
       - run:
           name: Archive Docker image
-          command: docker save --output image.tar "${FEED_IMAGE_TAG}"
+          command: docker save --output feed.tar "${FEED_IMAGE_TAG}"
       - persist_to_workspace:
           root: .
           paths:
@@ -44,7 +44,7 @@ jobs:
           command: docker build -t "${USER_IMAGE_TAG}" ./udagram-api-user
       - run:
           name: Archive Docker image
-          command: docker save --output image.tar "${USER_IMAGE_TAG}"
+          command: docker save --output user.tar "${USER_IMAGE_TAG}"
       - persist_to_workspace:
           root: .
           paths:
@@ -60,7 +60,7 @@ jobs:
           command: docker build -t "${FRONTEND_IMAGE_TAG}" ./udagram-frontend
       - run:
           name: Archive Docker image
-          command: docker save --output image.tar "${FRONTEND_IMAGE_TAG}"
+          command: docker save --output frontend.tar "${FRONTEND_IMAGE_TAG}"
       - persist_to_workspace:
           root: .
           paths:
@@ -76,7 +76,7 @@ jobs:
           command: docker build -t "${REVERSE_IMAGE_TAG}" ./udagram-reverseproxy
       - run:
           name: Archive Docker image
-          command: docker save --output image.tar "${REVERSE_IMAGE_TAG}"
+          command: docker save --output reverse.tar "${REVERSE_IMAGE_TAG}"
       - persist_to_workspace:
           root: .
           paths:
