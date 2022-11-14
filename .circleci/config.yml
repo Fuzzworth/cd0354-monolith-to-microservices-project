@@ -14,7 +14,7 @@ executors:
       - image: cimg/node:12.22
         auth:
           username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_PASSWORD
+          password: $DOCKERHUB_PASSWROD
 
 jobs:
   build-feed:
@@ -96,7 +96,7 @@ jobs:
       - run:
           name: Publish Docker image
           command: |
-            echo "${DOCKERHUB_PASSWORD}" | docker login --username "${DOCKERHUB_USERNAME}" --password-stdin
+            echo "${DOCKERHUB_PASSWROD}" | docker login --username "${DOCKERHUB_USERNAME}" --password-stdin
             docker push "${FEED_IMAGE_TAG}"
 
   push-user:
@@ -113,7 +113,7 @@ jobs:
       - run:
           name: Publish Docker image
           command: |
-            echo "${DOCKERHUB_PASSWORD}" | docker login --username "${DOCKERHUB_USERNAME}" --password-stdin
+            echo "${DOCKERHUB_PASSWROD}" | docker login --username "${DOCKERHUB_USERNAME}" --password-stdin
             docker push "${USER_IMAGE_TAG}"
   
   push-frontend:
@@ -130,7 +130,7 @@ jobs:
       - run:
           name: Publish Docker image
           command: |
-            echo "${DOCKERHUB_PASSWORD}" | docker login --username "${DOCKERHUB_USERNAME}" --password-stdin
+            echo "${DOCKERHUB_PASSWROD}" | docker login --username "${DOCKERHUB_USERNAME}" --password-stdin
             docker push "${FRONTEND_IMAGE_TAG}"
 
   push-reverse:
@@ -146,7 +146,7 @@ jobs:
       - run:
           name: Publish Docker image
           command: |
-            echo "${DOCKERHUB_PASSWORD}" | docker login --username "${DOCKERHUB_USERNAME}" --password-stdin
+            echo "${DOCKERHUB_PASSWROD}" | docker login --username "${DOCKERHUB_USERNAME}" --password-stdin
             docker push "${REVERSE_IMAGE_TAG}"
 
 workflows:
