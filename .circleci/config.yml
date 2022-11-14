@@ -77,6 +77,7 @@ jobs:
   push:
     executor: docker-publisher
     steps:
+      - checkout
       - setup_remote_docker
       - run: node --version
       - attach_workspace:
