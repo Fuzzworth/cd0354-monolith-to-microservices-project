@@ -28,7 +28,7 @@ jobs:
           name: "Build Udagram Feed"
           command: docker build -t "${FEED_IMAGE_TAG}" ./udagram-api-feed
       - persist_to_workspace:
-          root: ./
+          root: .
           paths:
             - ./feed.tar
 
@@ -42,7 +42,7 @@ jobs:
           name: "Build Udagram User"
           command: docker build -t "${USER_IMAGE_TAG}" ./udagram-api-user
       - persist_to_workspace:
-          root: ./
+          root: .
           paths:
             - ./user.tar
       
@@ -56,7 +56,7 @@ jobs:
           name: "Build Udagram Frontend"
           command: docker build -t "${FRONTEND_IMAGE_TAG}" ./udagram-frontend
       - persist_to_workspace:
-          root: ./
+          root: .
           paths:
             - ./frontend.tar
 
@@ -70,14 +70,13 @@ jobs:
           name: "Build Udagram Reverse Proxy"
           command: docker build -t "${REVERSE_IMAGE_TAG}" ./udagram-reverseproxy
       - persist_to_workspace:
-          root: ./
+          root: .
           paths:
             - ./reverse.tar
 
-  push:
+  push-feed:
     executor: docker-publisher
     steps:
-      - checkout
       - setup_remote_docker
       - run: node --version
       - attach_workspace:
@@ -85,12 +84,53 @@ jobs:
       - run:
           name: Load Feed image
           command: docker load --input ./feed.tar
+      # Log in to Docker Hub and push the image
+      - run:
+          name: Publish Docker image
+          command: |
+            echo "${DOCKERHUB_PASSWORD}" | docker login --username "${DOCKERHUB_USERNAME}" --password-stdin
+            docker push "${FEED_IMAGE_TAG}"
+
+  push-user:
+    executor: docker-publisher
+    steps:
+      - setup_remote_docker
+      - run: node --version
+      - attach_workspace:
+          at: /tmp/workspace
       - run:
           name: Load User image
           command: docker load --input ./user.tar
+      # Log in to Docker Hub and push the image
+      - run:
+          name: Publish Docker image
+          command: |
+            echo "${DOCKERHUB_PASSWORD}" | docker login --username "${DOCKERHUB_USERNAME}" --password-stdin
+            docker push "${USER_IMAGE_TAG}"
+  
+  push-frontend:
+    executor: docker-publisher
+    steps:
+      - setup_remote_docker
+      - run: node --version
+      - attach_workspace:
+          at: /tmp/workspace
       - run:
           name: Load Frontend image
           command: docker load --input ./frontend.tar
+      # Log in to Docker Hub and push the image
+      - run:
+          name: Publish Docker image
+          command: |
+            echo "${DOCKERHUB_PASSWORD}" | docker login --username "${DOCKERHUB_USERNAME}" --password-stdin
+            docker push "${FRONTEND_IMAGE_TAG}"
+
+  push-reverse:
+    executor: docker-publisher
+    steps:
+      - setup_remote_docker
+      - attach_workspace:
+          at: /tmp/workspace
       - run:
           name: Load Reverrse image
           command: docker load --input ./reverse.tar
@@ -99,9 +139,6 @@ jobs:
           name: Publish Docker image
           command: |
             echo "${DOCKERHUB_PASSWORD}" | docker login --username "${DOCKERHUB_USERNAME}" --password-stdin
-            docker push "${FEED_IMAGE_TAG}"
-            docker push "${USER_IMAGE_TAG}"
-            docker push "${FRONTEND_IMAGE_TAG}"
             docker push "${REVERSE_IMAGE_TAG}"
 
 workflows:
@@ -112,11 +149,17 @@ workflows:
       - build-user
       - build-frontend
       - build-reverseproxy
-      - push:
+      - push-feed:
           requires:
             - build-feed
+      - push-user:
+          requires:
             - build-user
+      - push-front:
+          requires:
             - build-frontend
+      - push-reverse:
+          requires:
             - build-reverseproxy
           filters:
             branches:
