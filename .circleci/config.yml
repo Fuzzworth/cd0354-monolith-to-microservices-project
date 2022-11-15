@@ -6,7 +6,7 @@ executors:
     environment:
       FEED_IMAGE_TAG: fuzzworth/udagram-api-feed:v7a
       USER_IMAGE_TAG: fuzzworth/udagram-api-user:v7a
-      FRONTEND_IMAGE_TAG: fuzzworth/udagram-frontend:v8a
+      FRONTEND_IMAGE_TAG: fuzzworth/udagram-frontend:v9a
       REVERSE_IMAGE_TAG: fuzzworth/reverseproxy:v7a
 
     # Use `cimg/node:12.22` as the Docker image for this executor
